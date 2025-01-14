@@ -1,36 +1,37 @@
+# syntax=docker/dockerfile:1
 FROM debian:12-slim
 
 # set version labels
-ARG BUILD_DATE=01/09/2025
-ARG VERSION=v2025.01.09.01
-ARG CALIBRE_VERSION=7.23.0
+ARG BUILD_DATE=$(date +%D)
+ARG VERSION=0.1.0
+ARG CALIBRE_VERSION=7.24.0
 ARG CALIBRE_URL="https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"
-LABEL MAINTAINER="bradley leonard <bradley@leonard.pub>"
+LABEL MAINTAINER="Pete Hamlin github@pete-hamlin.com"
 
 # prep system
 RUN \
   echo "---===>>> prep system <<<===---" && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    libfontconfig \
-    libgl1 \
-    python3 \
-    wget \
-    libegl1 \
-    libxkbcommon0 \
-    libopengl0 \
-    libnss3 \
-    jq \
-    xz-utils && \
+  ca-certificates \
+  curl \
+  libfontconfig \
+  libgl1 \
+  python3 \
+  wget \
+  libegl1 \
+  libxkbcommon0 \
+  libopengl0 \
+  libnss3 \
+  jq \
+  xz-utils && \
   echo "---===>>> cleanup <<<===---" && \
   apt autoremove -y && \
   apt-get clean && \
   rm -rf \
-    /tmp/* \
-    /var/lib/apt/lists/* \
-    /var/tmp/
+  /tmp/* \
+  /var/lib/apt/lists/* \
+  /var/tmp/
 
 # install calibe
 RUN \
@@ -49,23 +50,7 @@ RUN mkdir /data && mkdir /scripts
 ADD startup.sh /scripts/startup.sh
 RUN chmod 755 /scripts/startup.sh
 
-# add add-books.sh
-ADD add-books.sh /scripts/add-books.sh
-RUN chmod 755 /scripts/add-books.sh
-
-# add remove-books.sh
-ADD remove-books.sh /scripts/remove-books.sh
-RUN chmod 755 /scripts/remove-books.sh
-
-# add get-book-info-books.sh
-ADD get-book-info.sh /scripts/get-book-info.sh
-RUN chmod 755 /scripts/get-book-info.sh
-
-# add update-missing-covers.sh
-ADD update-missing-covers.sh /scripts/update-missing-covers.sh
-RUN chmod 755 /scripts/update-missing-covers.sh
-
-# Expose port
+VOLUME /data/library
 EXPOSE 8080
 
 CMD ["/scripts/startup.sh"]
