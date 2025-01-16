@@ -8,9 +8,9 @@ This is primarily useful to me, as I also run [calibre-web](), but still have so
 
 Supports the following features:
 
-- [ ] Runs calibre content server with the following features
+- [x] Runs calibre content server with the following features
   - [x] Custom port (via `PORT`)
-  - [ ] Auth (via `USERNAME` & `PASSWORD` env vars)
+  - [x] Auth (via `USERNAME` & `PASSWORD` env vars)
 - [ ] Mountable `/config` directory
 
 ### Env Vars
@@ -22,12 +22,15 @@ All env vars are optional.
 | `ENABLE_AUTH` | | Any value here will enable auth (requires `USERNAME` & `PASSWORD`)|
 | `USERNAME` | `user` | Username for web auth|
 | `PASSWORD` | `password` | Password for web auth |
+| `ROOT_DIR` | `/data` | Root dir containing calibre library and `metadata.db`|
 
 ### Volumes
 
-| Name    | Required | Description                                      |
-| ------- | -------- | ------------------------------------------------ |
-| `/data` | X        | Calibre library containing books & `metadata.db` |
+| Name       | Required | Description                                      |
+| ---------- | -------- | ------------------------------------------------ |
+| `/data` \* | X        | Calibre library containing books & `metadata.db` |
+
+`*` - This volume mount needs to match `ROOT_DIR`
 
 ## Running
 
@@ -37,8 +40,8 @@ Can be run with the following:
 
 ```sh
 # Optionally build
-docker build . -t ghcr/Pete-Hamlin/calibre-content-server
-docker run -d --name=calibre -v /home/books:/data -p 8080:8080
+docker build . -t ghcr.io/pete-hamlin/calibre-content-server
+docker run -d --name=calibre -v /home/books:/data -p 8080:8080 ghcr.io/pete-hamlin/calibre-content-server
 ```
 
 ### docker-compose
@@ -46,11 +49,10 @@ docker run -d --name=calibre -v /home/books:/data -p 8080:8080
 ```yaml
 services:
   calibre:
-    build: .
+    image: ghcr.io/pete-hamlin/calibre-content-server:latest
     restart: always
     volumes:
       - /path/to/books:/data
-      - /path/to/config:/config # optional
     ports:
       - 8080:8080
     user: 1000:1000
@@ -59,6 +61,7 @@ services:
       - ENABLE_AUTH=1 # optional
       - USERNAME=user # optional
       - PASSWORD=pass # optional
+      - ROOT_DIR=/data/books # optional
 ```
 
 Also see [sample](./docker-compose.yml) compose file.
