@@ -17,10 +17,10 @@ if [ ! -z "${ENABLE_AUTH}" ]; then
 		touch $USER_INIT
 	fi
 	# start calibre-server
-	/opt/calibre/calibre-server --port ${PORT:-8080} --enable-auth /data
+	/opt/calibre/calibre-server --port ${PORT:-8080} --enable-auth  ${ROOT_DIR:-/data}
 		
 else
 	echo "=====Auth Disabled====="
 	# start calibre-server without auth
-	/opt/calibre/calibre-server --port ${PORT:-8080} /data
+	/opt/calibre/calibre-server --port ${PORT:-8080} ${ROOT_DIR:-/data}
 fi
