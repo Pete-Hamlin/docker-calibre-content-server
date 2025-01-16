@@ -3,12 +3,13 @@ services:
     build: .
     restart: always
     volumes:
-      - ./books:/data/library
+      - ./books:/data
+      # - ./data:/config
     ports:
-      - 8080:8080
-    user: 1000:1000
+      - 8081:8081
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - PORT=8081
+      - ENABLE_AUTH=1

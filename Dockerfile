@@ -9,9 +9,7 @@ ARG CALIBRE_URL="https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-$
 LABEL MAINTAINER="Pete Hamlin github@pete-hamlin.com"
 
 # prep system
-RUN \
-  echo "---===>>> prep system <<<===---" && \
-  apt-get update && \
+RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   ca-certificates \
   curl \
@@ -44,13 +42,19 @@ RUN \
   rm -rf -- /tmp/calibre-tarball.txz
 
 # create directories
-RUN mkdir /data && mkdir /scripts
+RUN mkdir /data /config /scripts
+
+# add user abc
+RUN useradd abc
+RUN chown -R abc:abc /config
 
 # add startup.sh
 ADD startup.sh /scripts/startup.sh
 RUN chmod 755 /scripts/startup.sh
+USER abc
 
-VOLUME /data/library
+VOLUME /data
+
 EXPOSE 8080
 
 CMD ["/scripts/startup.sh"]
